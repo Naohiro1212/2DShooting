@@ -9,7 +9,7 @@ namespace
 	const int ENEMY_NUM = 10 * 7; // 敵の数
 	const int ENEMY_COL_SIZE = 10; // 敵の列数
 	const int ENEMY_ROW_SIZE = 7; // 敵の行数
-	const int ENEMY_X_OFFSET = 100; // 敵の座標の調整用
+	const int ENEMY_X_OFFSET = 270; // 敵の座標の調整用
 	bool IntersectRect(const Rect& a, const Rect& b)
 	{
 		bool overlapX = (a.x + a.width > b.x) && (b.x + b.width > a.x);
@@ -27,8 +27,9 @@ Stage::Stage()
 	for (int i = 0; i < ENEMY_NUM; i++) {
 		int col = i % ENEMY_COL_SIZE; // 列
 		int row = i / ENEMY_COL_SIZE; // 行
+		int oddeven = i % 2; // moveID_が0か1か
 		ETYPE enemyType[ENEMY_ROW_SIZE] = { BOSS, KNIGHT, MID, ZAKO, ZAKO, ZAKO, ZAKO }; // 敵の種類
-		enemy_[i] = new Enemy(i, enemyType[row]); // 敵オブジェクトの生成
+		enemy_[i] = new Enemy(i, enemyType[row],oddeven); // 敵オブジェクトの生成
 
 		enemy_[i]->SetPos(col * 55.0f + ENEMY_X_OFFSET, row * 50.0f); // 敵の初期位置を設定
 

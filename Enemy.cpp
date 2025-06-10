@@ -14,7 +14,7 @@ namespace
 	const float ENEMY_INIT_SPEED = 1.5f; // 敵の初期移動速度;
 
 	const float ENEMY_CENTER_X = WIN_WIDTH / 2 - 120; // 敵の中央線
-	const float ENEMY_MOVE_X = 300; // 敵の左右のブレ
+	const float ENEMY_MOVE_X = 200; // 敵の左右のブレ
 }
 
 
@@ -22,7 +22,7 @@ Enemy::Enemy()
 	:GameObject(), 
 	 hImage_(-1), 
 	 x_(0), y_(0), 
-	 speed_(0), cenx_(0)
+	 oddspeed_(0), evenspeed_(0), cenx_(0), moveID_(0)
 {
 	hImage_ = LoadGraph("Assets\\tiny_ship10.png"); // 敵の画像を読み込む
 	if (hImage_ == -1) {
@@ -31,15 +31,15 @@ Enemy::Enemy()
 	}
 	x_ = ENEMY_INIT_X; // 初期座標
 	y_ = ENEMY_INIT_Y; // 初期座標
-	speed_ = ENEMY_INIT_SPEED; // 移動速度
+	oddspeed_ = ENEMY_INIT_SPEED; // 移動速度
 }
 
-Enemy::Enemy(int id, ETYPE type)
+Enemy::Enemy(int id, ETYPE type, int moveID)
 	:GameObject(),
 	hImage_(-1),
 	x_(ENEMY_INIT_X), y_(ENEMY_INIT_Y),
-	speed_(ENEMY_INIT_SPEED),
-	ID_(id), type_(type), cenx_(ENEMY_CENTER_X)
+	oddspeed_(ENEMY_INIT_SPEED),evenspeed_(-ENEMY_INIT_SPEED),
+	ID_(id), type_(type), cenx_(ENEMY_CENTER_X),moveID_(moveID)
 {	
 	//ETYPE::ZAKO =>  "Assets/tiny_ship10.png"
 	//ETYPE::MID = > "Assets/tiny_ship18.png"
@@ -76,13 +76,26 @@ void Enemy::Update()
 {
 	static float beamTimer = 3.0f; // 弾の発射タイマー
 
-	x_ += speed_;
+	if (moveID_ == 0)
+	{
+		x_ += oddspeed_;
+	}
+	else if (moveID_ == 1)
+	{
+		x_ += evenspeed_;
+	}
 	// 基準点最初に設定してそれ基準で動くようにする
-	cenx_ += speed_;
+	cenx_ += oddspeed_;
 	if (cenx_ >= ENEMY_CENTER_X + ENEMY_MOVE_X || cenx_ <= ENEMY_CENTER_X)
 	{
-		y_ += 20.0f;
-		speed_ = -speed_;
+		if (moveID_ == 0)
+		{
+			oddspeed_ = -oddspeed_;
+		}
+		if (moveID_ == 1)
+		{
+			evenspeed_ = -evenspeed_;
+		}
 	}
 	
 	beamTimer -= GetDeltaTime();
@@ -101,6 +114,9 @@ void Enemy::Draw()
 	DrawExtendGraphF(x_, y_, x_ + ENEMY_IMAGE_WIDTH,
 		y_ + ENEMY_IMAGE_HEIGHT,
 		hImage_, TRUE);
+
+	DrawFormatString(300, 300, GetColor(255,255,255), "%f", oddspeed_);
+	DrawFormatString(500, 300, GetColor(255,255,255), "%f", evenspeed_);
 }
 
 Rect Enemy::GetRect() const
