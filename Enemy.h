@@ -7,7 +7,6 @@ enum ETYPE
 	ZAKO, MID, KNIGHT, BOSS, MAX_ETYPE
 };
 
-
 class Enemy :
 	public GameObject
 {

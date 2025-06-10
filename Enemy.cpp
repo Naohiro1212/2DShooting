@@ -1,6 +1,7 @@
 #include "Enemy.h"
 #include "DxLib.h"
 #include <string>
+#include "EnemyBeam.h"
 #include "Effect.h"
 
 namespace
@@ -10,7 +11,7 @@ namespace
 
 	const float ENEMY_INIT_X = 100; // 敵の初期X座標;
 	const float ENEMY_INIT_Y = 100; // 敵の初期Y座標;
-	const float ENEMY_INIT_SPEED = 2.0f; // 敵の初期移動速度;
+	const float ENEMY_INIT_SPEED = 1.5f; // 敵の初期移動速度;
 
 	const float ENEMY_CENTER_X = WIN_WIDTH / 2 - 120; // 敵の中央線
 	const float ENEMY_MOVE_X = 300; // 敵の左右のブレ
@@ -31,7 +32,6 @@ Enemy::Enemy()
 	x_ = ENEMY_INIT_X; // 初期座標
 	y_ = ENEMY_INIT_Y; // 初期座標
 	speed_ = ENEMY_INIT_SPEED; // 移動速度
-	//idとtypeをしていされなかったときのしょりをここに書かねば
 }
 
 Enemy::Enemy(int id, ETYPE type)
@@ -74,6 +74,8 @@ Enemy::~Enemy()
 
 void Enemy::Update()
 {
+	static float beamTimer = 3.0f; // 弾の発射タイマー
+
 	x_ += speed_;
 	// 基準点最初に設定してそれ基準で動くようにする
 	cenx_ += speed_;
@@ -82,8 +84,15 @@ void Enemy::Update()
 		y_ += 20.0f;
 		speed_ = -speed_;
 	}
-	//DrawLine(cenx_, 0, cenx_, 600, GetColor(255, 0, 0));
-	//DrawFormatString(800, 100, GetColor(255, 0, 0), "%f", cenx_);
+	
+	beamTimer -= GetDeltaTime();
+	if (beamTimer < 0)
+	{
+		// 弾を発射
+		new EnemyBeam(x_ + ENEMY_IMAGE_WIDTH / 2, y_ + ENEMY_IMAGE_HEIGHT);
+		beamTimer = 3.0f;
+	}
+
 }
 
 void Enemy::Draw()
