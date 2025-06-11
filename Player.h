@@ -21,5 +21,7 @@ public:
 	void Shoot(); // 弾を発射する関数
 	Rect GetRect() const; // プレイヤーの矩形を取得
 	std::vector<Bullet*> GetAllBullets() const { return bullets_; } // 全ての弾を取得
+	float GetX() { return x_; }
+	float GetY() { return y_; }
 };
 

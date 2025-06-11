@@ -5,7 +5,7 @@
 namespace
 {
 	const int ENEMYBEAM_IMAGE_WIDTH = 16; // ’e‚Ì‰æ‘œ‚Ì•;
-	const int ENEMYBEAM_IMAGE_HEIGHT = 16; // ’e‚Ì‰æ‘œ‚Ì‚‚³;
+	const int ENEMYBEAM_IMAGE_HEIGHT = 48; // ’e‚Ì‰æ‘œ‚Ì‚‚³;
 	const float BULLET_INIT_SPEED = 200.0f; // ’e‚Ì‰ŠúˆÚ“®‘¬“x;
 	const std::string BULLET_IMAGE_PATH = "Assets\\ebeams.png";
 }
@@ -13,31 +13,40 @@ namespace
 EnemyBeam::EnemyBeam()
 	:GameObject(), hImage_(-1),
 	pos_({ -10,-10 }), speed_(0), isFired_(true),
-	imageSize_({ ENEMYBEAM_IMAGE_WIDTH, ENEMYBEAM_IMAGE_HEIGHT })
+	imageSize_({ ENEMYBEAM_IMAGE_WIDTH, ENEMYBEAM_IMAGE_HEIGHT }),pl(NULL)
 {
 	hImage_ = LoadGraph(BULLET_IMAGE_PATH.c_str());
 	speed_ = BULLET_INIT_SPEED;
 	AddGameObject(this);
+	dx = pl->GetX() - pos_.x;
+	dy = pl->GetY() - pos_.y;
+	length = sqrtf(dx * dx + dy * dy);
 }
 
-EnemyBeam::EnemyBeam(float x, float y)
+EnemyBeam::EnemyBeam(float x, float y, Player* player)
 	:GameObject(), hImage_(-1),
 	pos_({x, y}), speed_(0), isFired_(true),
-	imageSize_({ ENEMYBEAM_IMAGE_WIDTH, ENEMYBEAM_IMAGE_HEIGHT })
+	imageSize_({ ENEMYBEAM_IMAGE_WIDTH, ENEMYBEAM_IMAGE_HEIGHT }), pl(player)
 {
 	hImage_ = LoadGraph(BULLET_IMAGE_PATH.c_str());
 	speed_ = BULLET_INIT_SPEED;
 	AddGameObject(this);
+	dx = pl->GetX() - pos_.x;
+	dy = pl->GetY() - pos_.y;
+	length = sqrtf(dx * dx + dy * dy);
 }
 
-EnemyBeam::EnemyBeam(Point pos_)
+EnemyBeam::EnemyBeam(Point pos_, Player* player)
 	:GameObject(), hImage_(-1),
 	pos_(pos_), speed_(0), isFired_(true),
-	imageSize_({ ENEMYBEAM_IMAGE_WIDTH, ENEMYBEAM_IMAGE_HEIGHT })
+	imageSize_({ ENEMYBEAM_IMAGE_WIDTH, ENEMYBEAM_IMAGE_HEIGHT }), pl(player)
 {
 	hImage_ = LoadGraph(BULLET_IMAGE_PATH.c_str());
 	speed_ = BULLET_INIT_SPEED;
 	AddGameObject(this);
+	dx = pl->GetX() - pos_.x;
+	dy = pl->GetY() - pos_.y;
+	length = sqrtf(dx * dx + dy * dy);
 }
 
 EnemyBeam::~EnemyBeam()
@@ -52,7 +61,12 @@ EnemyBeam::~EnemyBeam()
 void EnemyBeam::Update()
 {
 	float dt = GetDeltaTime();
-	pos_.y = pos_.y + speed_ * dt; // ’e‚ÌˆÚ“®
+
+	float vx = dx / length * speed_ * dt;
+	float vy = dy / length * speed_ * dt;
+
+	pos_.x = pos_.x + vx; // ’e‚ÌˆÚ“®
+	pos_.y = pos_.y + vy; // ’e‚ÌˆÚ“®
 	if (pos_.y >= WIN_HEIGHT)
 	{
 		isFired_ = false;

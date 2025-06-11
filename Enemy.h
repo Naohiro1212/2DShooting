@@ -1,6 +1,9 @@
 #pragma once
 #include "GameObject.h"
 #include "globals.h"
+#include "Player.h"
+#include <vector>
+#include "EnemyBeam.h"
 
 enum ETYPE 
 {
@@ -10,15 +13,21 @@ enum ETYPE
 class Enemy :
 	public GameObject
 {
+private:
 	int hImage_;  //敵の画像ハンドル
 	float x_, y_; //敵の座標
-	float oddspeed_; //奇数行敵の移動速度
-	float evenspeed_; // 偶数行敵の移動速度
+	float oddspeed_; //偶数行敵の移動速度
+	float evenspeed_; // 奇数行敵の移動速度
 	float cenx_;  // 中央線を記憶しておくもの
+	float Timer_; // 反転するためのタイマー
 
 	int moveID_; // 奇数列が左、偶数列が右に動く
 	int ID_; //敵のID
 	ETYPE type_; //敵の種類
+	Player* pl;
+	std::vector<EnemyBeam*> ebs;
+
+
 public:
 	Enemy(int id, ETYPE type, int moveID);
 	Enemy();

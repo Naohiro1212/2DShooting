@@ -1,8 +1,8 @@
 #include "Enemy.h"
 #include "DxLib.h"
 #include <string>
-#include "EnemyBeam.h"
 #include "Effect.h"
+#include "EnemyBeam.h"
 
 namespace
 {
@@ -15,6 +15,7 @@ namespace
 
 	const float ENEMY_CENTER_X = WIN_WIDTH / 2 - 120; // 敵の中央線
 	const float ENEMY_MOVE_X = 200; // 敵の左右のブレ
+	const float ENEMY_TIMER = 3.0f;
 }
 
 
@@ -22,7 +23,7 @@ Enemy::Enemy()
 	:GameObject(), 
 	 hImage_(-1), 
 	 x_(0), y_(0), 
-	 oddspeed_(0), evenspeed_(0), cenx_(0), moveID_(0)
+	 oddspeed_(0), evenspeed_(0), cenx_(0), moveID_(0), Timer_(0)
 {
 	hImage_ = LoadGraph("Assets\\tiny_ship10.png"); // 敵の画像を読み込む
 	if (hImage_ == -1) {
@@ -32,14 +33,15 @@ Enemy::Enemy()
 	x_ = ENEMY_INIT_X; // 初期座標
 	y_ = ENEMY_INIT_Y; // 初期座標
 	oddspeed_ = ENEMY_INIT_SPEED; // 移動速度
+	pl = new Player;
 }
 
 Enemy::Enemy(int id, ETYPE type, int moveID)
 	:GameObject(),
 	hImage_(-1),
 	x_(ENEMY_INIT_X), y_(ENEMY_INIT_Y),
-	oddspeed_(ENEMY_INIT_SPEED),evenspeed_(-ENEMY_INIT_SPEED),
-	ID_(id), type_(type), cenx_(ENEMY_CENTER_X),moveID_(moveID)
+	oddspeed_(ENEMY_INIT_SPEED), evenspeed_(-ENEMY_INIT_SPEED),
+	ID_(id), type_(type), cenx_(ENEMY_CENTER_X), moveID_(moveID), Timer_(ENEMY_TIMER)
 {	
 	//ETYPE::ZAKO =>  "Assets/tiny_ship10.png"
 	//ETYPE::MID = > "Assets/tiny_ship18.png"
@@ -61,6 +63,7 @@ Enemy::Enemy(int id, ETYPE type, int moveID)
 	x_ = ENEMY_INIT_X; // 初期座標
 	y_ = ENEMY_INIT_Y; // 初期座標
 	AddGameObject(this); // 敵オブジェクトをゲームオブジェクトのベクターに追加
+	pl = new Player;
 }
 
 Enemy::~Enemy()
@@ -80,13 +83,13 @@ void Enemy::Update()
 	{
 		x_ += oddspeed_;
 	}
-	else if (moveID_ == 1)
+	if (moveID_ == 1)
 	{
 		x_ += evenspeed_;
 	}
-	// 基準点最初に設定してそれ基準で動くようにする
-	cenx_ += oddspeed_;
-	if (cenx_ >= ENEMY_CENTER_X + ENEMY_MOVE_X || cenx_ <= ENEMY_CENTER_X)
+
+	Timer_ -= GetDeltaTime();
+	if(Timer_ <= 0)
 	{
 		if (moveID_ == 0)
 		{
@@ -96,13 +99,14 @@ void Enemy::Update()
 		{
 			evenspeed_ = -evenspeed_;
 		}
+		Timer_ = ENEMY_TIMER;
 	}
 	
 	beamTimer -= GetDeltaTime();
-	if (beamTimer < 0)
+	if (beamTimer <= 0)
 	{
 		// 弾を発射
-		new EnemyBeam(x_ + ENEMY_IMAGE_WIDTH / 2, y_ + ENEMY_IMAGE_HEIGHT);
+		ebs.push_back(&EnemyBeam(x_, y_, pl));
 		beamTimer = 3.0f;
 	}
 
