@@ -121,9 +121,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			break;
 		case PLAY:
 			ObjectInit();
+			ObjectFinalize();
 			if (Input::IsKeyDown(KEY_INPUT_K))
 			{
-				ObjectFinalize();
 				CurrentScene = END;
 			}
 			break;

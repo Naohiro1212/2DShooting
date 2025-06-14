@@ -1,7 +1,6 @@
 #pragma once
 #include "GameObject.h"
 #include "globals.h"
-#include "Player.h"
 
 class EnemyBeam : public GameObject
 {
@@ -11,19 +10,18 @@ private:
 	float speed_; // 弾の移動速度
 	Point imageSize_; // 弾の表示サイズ
 	bool isFired_; // 発射されているかどうか
-	float dx, dy, length; // 敵の弾のベクトル
-	Player* pl;
 	
 protected:
 
 public:
 	EnemyBeam();
-	EnemyBeam(float x, float y, Player* player);
-	EnemyBeam(Point pos_, Player* player);
+	EnemyBeam(float x, float y);
+	EnemyBeam(Point pos_);
 	~EnemyBeam();
 	void Update() override;
 	void Draw() override;
 
+	bool IsOutOfScreen();
 	void SetPos(float x, float y) { pos_.x = x; pos_.y = y;	}
 	void SetPos(const Point& pos) { pos_ = pos; }
 	void SetFired(bool fired) { isFired_ = fired; } // 発射状態を設定

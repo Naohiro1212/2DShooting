@@ -24,9 +24,6 @@ private:
 	int moveID_; // Šï”—ñ‚ª¶A‹ô”—ñ‚ª‰E‚É“®‚­
 	int ID_; //“G‚ÌID
 	ETYPE type_; //“G‚Ìí—Ş
-	Player* pl;
-	std::vector<EnemyBeam*> ebs;
-
 
 public:
 	Enemy(int id, ETYPE type, int moveID);
@@ -36,4 +33,6 @@ public:
 	void Draw() override;
 	void SetPos(float x, float y) { x_ = x; y_ = y; } //“G‚ÌÀ•W‚ğİ’è
 	Rect GetRect() const;// ’e‚Ì‹éŒ`‚ğæ“¾
+	int GetX() { return x_; }
+	int GetY() { return y_; }
 };

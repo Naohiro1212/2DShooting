@@ -13,40 +13,31 @@ namespace
 EnemyBeam::EnemyBeam()
 	:GameObject(), hImage_(-1),
 	pos_({ -10,-10 }), speed_(0), isFired_(true),
-	imageSize_({ ENEMYBEAM_IMAGE_WIDTH, ENEMYBEAM_IMAGE_HEIGHT }),pl(NULL)
+	imageSize_({ ENEMYBEAM_IMAGE_WIDTH, ENEMYBEAM_IMAGE_HEIGHT })
 {
 	hImage_ = LoadGraph(BULLET_IMAGE_PATH.c_str());
 	speed_ = BULLET_INIT_SPEED;
 	AddGameObject(this);
-	dx = pl->GetX() - pos_.x;
-	dy = pl->GetY() - pos_.y;
-	length = sqrtf(dx * dx + dy * dy);
 }
 
-EnemyBeam::EnemyBeam(float x, float y, Player* player)
+EnemyBeam::EnemyBeam(float x, float y)
 	:GameObject(), hImage_(-1),
-	pos_({x, y}), speed_(0), isFired_(true),
-	imageSize_({ ENEMYBEAM_IMAGE_WIDTH, ENEMYBEAM_IMAGE_HEIGHT }), pl(player)
+	pos_({ x, y }), speed_(0), isFired_(true),
+	imageSize_({ ENEMYBEAM_IMAGE_WIDTH, ENEMYBEAM_IMAGE_HEIGHT })
 {
 	hImage_ = LoadGraph(BULLET_IMAGE_PATH.c_str());
 	speed_ = BULLET_INIT_SPEED;
 	AddGameObject(this);
-	dx = pl->GetX() - pos_.x;
-	dy = pl->GetY() - pos_.y;
-	length = sqrtf(dx * dx + dy * dy);
 }
 
-EnemyBeam::EnemyBeam(Point pos_, Player* player)
+EnemyBeam::EnemyBeam(Point pos_)
 	:GameObject(), hImage_(-1),
 	pos_(pos_), speed_(0), isFired_(true),
-	imageSize_({ ENEMYBEAM_IMAGE_WIDTH, ENEMYBEAM_IMAGE_HEIGHT }), pl(player)
+	imageSize_({ ENEMYBEAM_IMAGE_WIDTH, ENEMYBEAM_IMAGE_HEIGHT })
 {
 	hImage_ = LoadGraph(BULLET_IMAGE_PATH.c_str());
 	speed_ = BULLET_INIT_SPEED;
 	AddGameObject(this);
-	dx = pl->GetX() - pos_.x;
-	dy = pl->GetY() - pos_.y;
-	length = sqrtf(dx * dx + dy * dy);
 }
 
 EnemyBeam::~EnemyBeam()
@@ -62,15 +53,10 @@ void EnemyBeam::Update()
 {
 	float dt = GetDeltaTime();
 
-	float vx = dx / length * speed_ * dt;
-	float vy = dy / length * speed_ * dt;
-
-	pos_.x = pos_.x + vx; // 弾の移動
-	pos_.y = pos_.y + vy; // 弾の移動
+	pos_.y += speed_ * dt;
 	if (pos_.y >= WIN_HEIGHT)
 	{
 		isFired_ = false;
-		SetAlive(false); // ゲームオブジェクトを非アクティブにする
 	}
 }
 
@@ -83,4 +69,13 @@ void EnemyBeam::Draw()
 			pos_.x + imageSize_.x, pos_.y + imageSize_.y, 
 			hImage_, TRUE); // 描画 
 	}
+}
+
+bool EnemyBeam::IsOutOfScreen()
+{
+	if (pos_.y >= WIN_HEIGHT)
+	{
+		return true;
+	}
+	return false;
 }

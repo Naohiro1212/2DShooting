@@ -33,7 +33,6 @@ Enemy::Enemy()
 	x_ = ENEMY_INIT_X; // 初期座標
 	y_ = ENEMY_INIT_Y; // 初期座標
 	oddspeed_ = ENEMY_INIT_SPEED; // 移動速度
-	pl = new Player;
 }
 
 Enemy::Enemy(int id, ETYPE type, int moveID)
@@ -63,7 +62,6 @@ Enemy::Enemy(int id, ETYPE type, int moveID)
 	x_ = ENEMY_INIT_X; // 初期座標
 	y_ = ENEMY_INIT_Y; // 初期座標
 	AddGameObject(this); // 敵オブジェクトをゲームオブジェクトのベクターに追加
-	pl = new Player;
 }
 
 Enemy::~Enemy()
@@ -71,7 +69,7 @@ Enemy::~Enemy()
 	new Effect({ x_, y_ });
 	if (hImage_ != -1)
 	{
-		DeleteGraph(hImage_); // 画像のハンドルを解放  
+		DeleteGraph(hImage_); // 画像のハンドルを解放
 	}
 }
 
@@ -102,25 +100,28 @@ void Enemy::Update()
 		Timer_ = ENEMY_TIMER;
 	}
 	
-	beamTimer -= GetDeltaTime();
-	if (beamTimer <= 0)
-	{
-		// 弾を発射
-		ebs.push_back(&EnemyBeam(x_, y_, pl));
-		beamTimer = 3.0f;
-	}
+	//beamTimer -= GetDeltaTime();
+	//if (beamTimer <= 0)
+	//{
+	//	// 弾を発射
+	//	ebs.push_back(EnemyBeam(x_, y_));
+	//	beamTimer = 3.0f;
+	//}
 
 }
 
 void Enemy::Draw()
 {
 	//画面の左上に敵画像を表示
-	DrawExtendGraphF(x_, y_, x_ + ENEMY_IMAGE_WIDTH,
-		y_ + ENEMY_IMAGE_HEIGHT,
-		hImage_, TRUE);
+	if (isAlive_)
+	{
+		DrawExtendGraphF(x_, y_, x_ + ENEMY_IMAGE_WIDTH,
+			y_ + ENEMY_IMAGE_HEIGHT,
+			hImage_, TRUE);
+	}
 
-	DrawFormatString(300, 300, GetColor(255,255,255), "%f", oddspeed_);
-	DrawFormatString(500, 300, GetColor(255,255,255), "%f", evenspeed_);
+	//DrawFormatString(300, 300, GetColor(255,255,255), "%f", oddspeed_);
+	//DrawFormatString(500, 300, GetColor(255,255,255), "%f", evenspeed_);
 }
 
 Rect Enemy::GetRect() const
