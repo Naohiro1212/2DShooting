@@ -122,7 +122,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		case PLAY:
 			ObjectInit();
 			ObjectFinalize();
-			if (Input::IsKeyDown(KEY_INPUT_K))
+			if (stage->IsClear() == true && Input::IsKeyDown(KEY_INPUT_K))
 			{
 				CurrentScene = END;
 			}

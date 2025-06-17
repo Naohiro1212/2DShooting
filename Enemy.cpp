@@ -42,10 +42,7 @@ Enemy::Enemy(int id, ETYPE type, int moveID)
 	oddspeed_(ENEMY_INIT_SPEED), evenspeed_(-ENEMY_INIT_SPEED),
 	ID_(id), type_(type), cenx_(ENEMY_CENTER_X), moveID_(moveID), Timer_(ENEMY_TIMER)
 {	
-	//ETYPE::ZAKO =>  "Assets/tiny_ship10.png"
-	//ETYPE::MID = > "Assets/tiny_ship18.png"
-	//ETYPE::KNIGHT = > "Assets/tiny_ship16.png"
-	//ETYPE::BOSS = > "Assets/tiny_ship9.png"
+
 	// 画像の読み込み
 	std::string imagePath[MAX_ETYPE] = {
 		"Assets\\tiny_ship10.png", // ZAKO
@@ -75,8 +72,6 @@ Enemy::~Enemy()
 
 void Enemy::Update()
 {
-	static float beamTimer = 3.0f; // 弾の発射タイマー
-
 	if (moveID_ == 0)
 	{
 		x_ += oddspeed_;
@@ -98,16 +93,8 @@ void Enemy::Update()
 			evenspeed_ = -evenspeed_;
 		}
 		Timer_ = ENEMY_TIMER;
+		y_ += 5.0f;
 	}
-	
-	//beamTimer -= GetDeltaTime();
-	//if (beamTimer <= 0)
-	//{
-	//	// 弾を発射
-	//	ebs.push_back(EnemyBeam(x_, y_));
-	//	beamTimer = 3.0f;
-	//}
-
 }
 
 void Enemy::Draw()
@@ -119,9 +106,6 @@ void Enemy::Draw()
 			y_ + ENEMY_IMAGE_HEIGHT,
 			hImage_, TRUE);
 	}
-
-	//DrawFormatString(300, 300, GetColor(255,255,255), "%f", oddspeed_);
-	//DrawFormatString(500, 300, GetColor(255,255,255), "%f", evenspeed_);
 }
 
 Rect Enemy::GetRect() const

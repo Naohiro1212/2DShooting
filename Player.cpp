@@ -16,13 +16,9 @@ namespace
 	const float PLAYER_INIT_X = WIN_WIDTH/2 - PLAYER_IMAGE_WIDTH/2; // プレイヤーの初期X座標;
 	const float PLAYER_INIT_Y = WIN_HEIGHT - PLAYER_IMAGE_HEIGHT - PLAYER_BASE_MARGIN; // プレイヤーの初期Y座標;
 	const int BULLET_IMAGE_MARGIN = 17; // 弾の画像のマージン;
-	const float BULLET_INTERVAL = 0.4f; // 弾の発射間隔;
-	const int PLAYER_BULLET_NUM = 5; // プレイヤーが同時に発射できる弾の数;
+	const float BULLET_INTERVAL = 0.2f; // 弾の発射間隔;
+	const int PLAYER_BULLET_NUM = 11; // プレイヤーが同時に発射できる弾の数;
 }
-
-
-
-
 
 Player::Player()
 	:GameObject(), hImage_(-1), x_(0), y_(0), speed_(0), imageSize_({ PLAYER_IMAGE_WIDTH, PLAYER_IMAGE_HEIGHT })
@@ -40,6 +36,7 @@ Player::Player()
 		bullets_.push_back(new Bullet()); // 弾のベクターを初期化
 	}
 
+	isAlive_ = true;
 	AddGameObject(this); // プレイヤーオブジェクトをゲームオブジェクトのベクターに追加
 }
 
@@ -65,13 +62,13 @@ void Player::Update()
 		y_ = nextP.y;
 	}
 
-	static float bulletTimer = 0.0f; // 弾の発射タイマー
+	static float bulletTimer = BULLET_INTERVAL; // 弾の発射タイマー
 
 	if (bulletTimer > 0.0f) {
 		bulletTimer -= dt; // タイマーを減少
 	}
 
-	if (Input::IsKeyDown(KEY_INPUT_SPACE)) {
+	if (Input::IsKeepKeyDown(KEY_INPUT_SPACE)) {
 		if (bulletTimer <= 0.0f) {
 			Shoot(); // 弾を発射
 			//new Bullet(x_ + BULLET_IMAGE_MARGIN, y_); // 弾の発射
@@ -82,9 +79,12 @@ void Player::Update()
 
 void Player::Draw()
 {
+	if (isAlive_ == true)
+	{
+		DrawExtendGraphF(x_, y_, x_ + PLAYER_IMAGE_WIDTH, y_ + PLAYER_IMAGE_HEIGHT,
+			hImage_, TRUE);
+	}
 	// プレイヤーの画像を描画(画像の原点は左上)
-	DrawExtendGraphF(x_, y_, x_ + PLAYER_IMAGE_WIDTH, y_ + PLAYER_IMAGE_HEIGHT,
-		hImage_, TRUE);
 }
 //弾を撃つ関数
 void Player::Shoot()
@@ -108,7 +108,14 @@ void Player::Shoot()
 
 Rect Player::GetRect() const
 {
-	return { x_, y_, PLAYER_IMAGE_WIDTH, PLAYER_IMAGE_HEIGHT };
+	// そのままだと当たり判定がでかすぎるため、少し狭めて猶予を持たせる
+	return { x_, y_, PLAYER_IMAGE_WIDTH - 10, PLAYER_IMAGE_HEIGHT - 10 };
+}
+
+void Player::playerPosition(float& x, float& y)
+{
+	x = x_;
+	y = y_;
 }
 
 Bullet* Player::GetActiveBullet()

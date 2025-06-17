@@ -10,7 +10,7 @@ namespace
 	const int ENEMY_COL_SIZE = 10; // 敵の列数
 	const int ENEMY_ROW_SIZE = 7; // 敵の行数
 	const int ENEMY_X_OFFSET = 270; // 敵の座標の調整用
-	const int ENEMY_BULLET_NUM = 10;
+	const int ENEMY_BULLET_NUM = 4;
 	bool IntersectRect(const Rect& a, const Rect& b)
 	{
 		bool overlapX = (a.x + a.width > b.x) && (b.x + b.width > a.x);
@@ -20,7 +20,7 @@ namespace
 }
 
 Stage::Stage()
-	:GameObject(), player_(nullptr),hBackground(-1)
+	:GameObject(), player_(nullptr),hBackground(-1), isClear_(false)
 {
 	AddGameObject(this); // ステージオブジェクトをゲームオブジェクトのベクターに追加
 	player_ = new Player(); // プレイヤーオブジェクトの生成
@@ -38,9 +38,11 @@ Stage::Stage()
 	}
 	hBackground = LoadGraph("Assets/sbg.png");
 
+	player_->playerPosition(pX_, pY_);
+
 	for (int i = 0; i < ENEMY_BULLET_NUM; i++)
 	{
-		ebs_[i] = new EnemyBeam(enemy_[i]->GetX(), enemy_[i]->GetY());
+		ebs_[i] = new EnemyBeam(enemy_[i]->GetX(), enemy_[i]->GetY(), pX_, pY_);
 	}
 }
 
@@ -50,6 +52,8 @@ Stage::~Stage()
 
 void Stage::Update()
 {
+	aliveenemys.clear();
+
 	//ここに当たり判定
 	std::vector<Bullet*> bullets = player_->GetAllBullets();
 	for (auto& e : enemy_)
@@ -68,7 +72,24 @@ void Stage::Update()
 		}
 	}
 
-	std::vector<Enemy*> aliveenemys;
+	for (auto& ebs : ebs_)
+	{
+		if (ebs->IsFired() && player_->IsAlive())
+		{
+			if (IntersectRect(ebs->GetRect(), player_->GetRect()))
+			{
+				if (ebs->IsFired())
+				{
+					ebs->SetAlive(false);
+				}
+				if (player_->IsAlive())
+				{
+					player_->SetAlive(false);
+				}
+			}
+		}
+	}
+
 	for (auto& e : enemy_)
 	{
 		if (e->IsAlive())
@@ -77,17 +98,31 @@ void Stage::Update()
 		}
 	}
 
-	for (auto& ebs : ebs_)
+	// 常にプレイヤーの座標を取得しておき、画面外に出たときに敵弾のターゲットを更新する
+	player_->playerPosition(pX_, pY_);
+
+	static size_t targetEnemyIndex = 0;
+	static size_t aliveCount_ = aliveenemys.size();
+	if (aliveCount_ > 0)
 	{
-		if (ebs->IsOutOfScreen())
+		for (auto& ebs : ebs_)
 		{
-			// 例えば、最初の生きている敵の座標に再設定する場合
-			if (!aliveenemys.empty())
+			if (ebs->IsOutOfScreen() && !aliveenemys.empty())
 			{
-				ebs->SetPos(aliveenemys[0]->GetX(), aliveenemys[0]->GetY());
+				// 現在のインデックスの敵座標を取得
+				size_t index = targetEnemyIndex % aliveCount_;
+				ebs->SetPos(aliveenemys[index]->GetX(),
+					aliveenemys[index]->GetY());
+				ebs->SetTarget(pX_, pY_);
 				ebs->SetFired(true);
+				targetEnemyIndex++;
 			}
 		}
+	}
+
+	if (aliveenemys.size() == 0)
+	{
+		isClear_ = true;
 	}
 }
 
