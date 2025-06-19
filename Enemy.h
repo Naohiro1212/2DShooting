@@ -33,6 +33,6 @@ public:
 	void Draw() override;
 	void SetPos(float x, float y) { x_ = x; y_ = y; } //“G‚ÌÀ•W‚ğİ’è
 	Rect GetRect() const;// ’e‚Ì‹éŒ`‚ğæ“¾
-	int GetX() { return x_; }
-	int GetY() { return y_; }
+	float GetX() { return x_; }
+	float GetY() { return y_; }
 };

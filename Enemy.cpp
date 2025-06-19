@@ -20,10 +20,10 @@ namespace
 
 
 Enemy::Enemy()
-	:GameObject(), 
-	 hImage_(-1), 
-	 x_(0), y_(0), 
-	 oddspeed_(0), evenspeed_(0), cenx_(0), moveID_(0), Timer_(0)
+	:GameObject(),
+	hImage_(-1),
+	x_(0), y_(0),
+	oddspeed_(0), evenspeed_(0), cenx_(0), moveID_(0), Timer_(0), ID_(0), type_(MAX_ETYPE)
 {
 	hImage_ = LoadGraph("Assets\\tiny_ship10.png"); // “G‚Ì‰æ‘œ‚ğ“Ç‚İ‚Ş
 	if (hImage_ == -1) {

@@ -33,6 +33,7 @@ Stage::Stage()
 		ETYPE enemyType[ENEMY_ROW_SIZE] = { BOSS, KNIGHT, MID, ZAKO, ZAKO, ZAKO, ZAKO }; // 敵の種類
 		enemy_[i] = new Enemy(i, enemyType[row],oddeven); // 敵オブジェクトの生成
 
+		enemy_[i]->SetAlive(true);
 		enemy_[i]->SetPos(col * 55.0f + ENEMY_X_OFFSET, row * 50.0f); // 敵の初期位置を設定
 
 	}
@@ -52,11 +53,10 @@ Stage::~Stage()
 
 void Stage::Update()
 {
-	aliveenemys.clear();
-
 	//ここに当たり判定
 	std::vector<Bullet*> bullets = player_->GetAllBullets();
 	for (auto& e : enemy_)
+
 	{
 		for (auto& b : bullets)
 		{
@@ -90,6 +90,7 @@ void Stage::Update()
 		}
 	}
 
+	aliveenemys.clear();
 	for (auto& e : enemy_)
 	{
 		if (e->IsAlive())
@@ -101,8 +102,8 @@ void Stage::Update()
 	// 常にプレイヤーの座標を取得しておき、画面外に出たときに敵弾のターゲットを更新する
 	player_->playerPosition(pX_, pY_);
 
-	static size_t targetEnemyIndex = 0;
-	static size_t aliveCount_ = aliveenemys.size();
+	size_t targetEnemyIndex = 0;
+	size_t aliveCount_ = aliveenemys.size();
 	if (aliveCount_ > 0)
 	{
 		for (auto& ebs : ebs_)
@@ -120,10 +121,11 @@ void Stage::Update()
 		}
 	}
 
-	if (aliveenemys.size() == 0)
+	if ((int)aliveCount_ == 0)
 	{
 		isClear_ = true;
 	}
+	DrawFormatString(600, 100, GetColor(255, 0, 0), "%d", (int)aliveCount_);
 }
 
 void Stage::Draw()
