@@ -4,7 +4,8 @@
 class StartScene : GameObject
 {
 private:
-
+	int bImage_;
+	int hBackground;
 public:
 	StartScene();
 	~StartScene();

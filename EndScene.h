@@ -4,7 +4,8 @@
 class EndScene : GameObject
 {
 private:
-
+	int hBackground;
+	int bImage_;
 public:
 	EndScene();
 	~EndScene();

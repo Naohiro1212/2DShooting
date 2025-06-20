@@ -20,7 +20,7 @@ namespace
 }
 
 Stage::Stage()
-	:GameObject(), player_(nullptr),hBackground(-1), isClear_(false)
+	:GameObject(), player_(nullptr),hBackground(-1), isClear_(false), aliveEnemyNum_(ENEMY_NUM)
 {
 	AddGameObject(this); // ステージオブジェクトをゲームオブジェクトのベクターに追加
 	player_ = new Player(); // プレイヤーオブジェクトの生成
@@ -67,11 +67,13 @@ void Stage::Update()
 						b->SetFired(false);
 					if (e->IsAlive())
 						e->SetAlive(false);
+					aliveEnemyNum_--;
 				}
 			}
 		}
 	}
 
+	// 敵の弾と
 	for (auto& ebs : ebs_)
 	{
 		if (ebs->IsFired() && player_->IsAlive())
@@ -103,15 +105,14 @@ void Stage::Update()
 	player_->playerPosition(pX_, pY_);
 
 	size_t targetEnemyIndex = 0;
-	size_t aliveCount_ = aliveenemys.size();
-	if (aliveCount_ > 0)
+	if (aliveEnemyNum_ > 0)
 	{
 		for (auto& ebs : ebs_)
 		{
 			if (ebs->IsOutOfScreen() && !aliveenemys.empty())
 			{
 				// 現在のインデックスの敵座標を取得
-				size_t index = targetEnemyIndex % aliveCount_;
+				size_t index = targetEnemyIndex % aliveEnemyNum_;
 				ebs->SetPos(aliveenemys[index]->GetX(),
 					aliveenemys[index]->GetY());
 				ebs->SetTarget(pX_, pY_);
@@ -121,11 +122,11 @@ void Stage::Update()
 		}
 	}
 
-	if ((int)aliveCount_ == 0)
+	if (aliveEnemyNum_ == 0)
 	{
 		isClear_ = true;
 	}
-	DrawFormatString(600, 100, GetColor(255, 0, 0), "%d", (int)aliveCount_);
+	DrawFormatString(600, 100, GetColor(255, 0, 0), "%d", aliveEnemyNum_);
 }
 
 void Stage::Draw()

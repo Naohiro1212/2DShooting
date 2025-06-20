@@ -17,6 +17,7 @@ private:
 	int hBackground;
 	float pX_, pY_; // プレイヤーの位置を取得（敵の弾に渡すため）
 	bool isClear_; // 敵を全員倒したか
+	int aliveEnemyNum_;
 
 public:
 	Stage();
